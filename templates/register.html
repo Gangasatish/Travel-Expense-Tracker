@@ -1,0 +1,67 @@
+<!--
+ * Register Template - Travel Expense Tracker
+ *
+ * Features:
+ * - User registration form with username, email, and password fields
+ * - 3D cube effect form inputs with interactive animations
+ * - Form validation with error message display
+ * - Modern styling with glowing effects and hover states
+ * - Secure form submission with CSRF protection
+ -->
+{% extends "base.html" %}
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#6C63FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="#6C63FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="#6C63FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h2 class="login-title">Create Account</h2>
+        <form method="POST" class="login-form">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    {{ form.username(class_="form-control", placeholder="Username") }}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    {{ form.email(class_="form-control", placeholder="Email") }}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    {{ form.password(class_="form-control", placeholder="Password") }}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    {{ form.confirm_password(class_="form-control", placeholder="Confirm Password") }}
+                </div>
+            </div>
+            {{ form.submit(class_="btn btn-primary login-btn") }}
+            <div class="forgot-password">
+                <a href="{{ url_for('login') }}">Already have an account? Login</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+<script>
+    // Show form validation messages
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                alert('{{ message }}');
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</script>

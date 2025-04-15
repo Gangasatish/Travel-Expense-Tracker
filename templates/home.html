@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero-section text-center py-5">
+    <h1 class="display-4 mb-4">Welcome to Travel Expense Tracker</h1>
+    <p class="lead mb-4">Track, manage, and split your travel expenses with ease</p>
+    {% if not current_user.is_authenticated %}
+    <div class="cta-buttons">
+        <a href="{{ url_for('register') }}" class="btn btn-primary me-3">Get Started</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline-primary">Sign In</a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="features-section py-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-wallet fa-3x mb-3 text-primary"></i>
+                    <h3 class="card-title">Track Expenses</h3>
+                    <p class="card-text">Keep track of all your travel expenses in one place with our intuitive interface.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                    <h3 class="card-title">Group Travel</h3>
+                    <p class="card-text">Create and join travel groups to manage shared expenses with friends and family.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-pie fa-3x mb-3 text-primary"></i>
+                    <h3 class="card-title">Smart Analytics</h3>
+                    <p class="card-text">Get insights into your spending patterns with detailed reports and analytics.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="how-it-works py-5">
+    <h2 class="text-center mb-5">How It Works</h2>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="step text-center">
+                <div class="step-number mb-3">1</div>
+                <h4>Create Account</h4>
+                <p>Sign up for free and set up your profile</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="step text-center">
+                <div class="step-number mb-3">2</div>
+                <h4>Add Expenses</h4>
+                <p>Log your travel expenses as you go</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="step text-center">
+                <div class="step-number mb-3">3</div>
+                <h4>Create Groups</h4>
+                <p>Organize expenses by travel groups</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="step text-center">
+                <div class="step-number mb-3">4</div>
+                <h4>Track & Share</h4>
+                <p>Monitor expenses and split costs easily</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

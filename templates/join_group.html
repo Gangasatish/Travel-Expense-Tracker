@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/group.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="group-card">
+        <div class="card-header">
+            <h2><span class="join-group-icon"></span>Join Group</h2>
+        </div>
+        <form method="POST" action="{{ url_for('join_group') }}" class="group-form">
+            {{ form.csrf_token }}
+            <div class="form-group">
+                <input type="text" class="form-control" id="invitation_code" name="invitation_code" 
+                       placeholder="Enter 4-digit Invitation Code" required minlength="4" maxlength="4" pattern="[0-9]{4}">
+                <small class="form-text text-muted">Enter the 4-digit invitation code provided by the group creator.</small>
+            </div>
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary">Join Group</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

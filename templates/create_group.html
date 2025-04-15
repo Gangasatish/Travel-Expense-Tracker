@@ -1,0 +1,37 @@
+<!--
+ * Create Group Template - Travel Expense Tracker
+ *
+ * Features:
+ * - Group creation form with name input
+ * - 3D cube effect form input with hover animations
+ * - Form validation with error message display
+ * - Modern styling with glowing effects
+ * - Secure form submission with CSRF protection
+ -->
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/group.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="group-card">
+        <div class="card-header">
+            <h2><span class="create-group-icon"></span>Create a New Group</h2>
+        </div>
+        <form method="POST" action="" class="group-form">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.name(class_="form-control", placeholder="Enter Group Name") }}
+                {% if form.name.errors %}
+                    {% for error in form.name.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="form-group text-center">
+                {{ form.submit(class_="btn btn-primary") }}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+</div>
+{% endblock content %}

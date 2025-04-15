@@ -1,0 +1,264 @@
+<!--
+ * Dashboard Template - Travel Expense Tracker
+ *
+ * Features:
+ * - Responsive grid layout for expense management
+ * - Group creation and joining functionality
+ * - Expense form with amount, category, and date fields
+ * - Optional group expense allocation
+ * - Personal expense tracking table
+ * - Modern form styling with 3D cube effects
+ -->
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-container">
+    <div class="expense-form">
+        <div class="mb-4 text-center">
+            <a href="{{ url_for('create_group') }}" class="btn btn-success">Create New Group</a>
+            <a href="{{ url_for('join_group') }}" class="btn btn-info">Join Group</a>
+        </div>
+
+        <h2>Add Expense</h2>
+        <form method="POST" action="" id="expenseForm">
+            {{ form.hidden_tag() }}
+            <div class="form-group block-cube block-input">
+                {{ form.amount.label(class="form-label") }}
+                {{ form.amount(class="form-control") }}
+            </div>
+            <div class="form-group block-cube block-input">
+                {{ form.category.label(class="form-label") }}
+                {{ form.category(class="form-control") }}
+            </div>
+            <div class="form-group block-cube block-input">
+                {{ form.date.label(class="form-label") }}
+                {{ form.date(class="form-control") }}
+            </div>
+            <div class="form-group block-cube block-input">
+                <label class="form-label">Group (Optional)</label>
+                <select name="group_id" class="form-control" id="groupSelect">
+                    <option value="">Personal Expense</option>
+                    {% for group in groups %}
+                    <option value="{{ group.id }}">{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                {{ form.is_split.label }}
+                {{ form.is_split(class="form-check-input ml-2", onchange="toggleSplitOptions()") }}
+            </div>
+            <div id="splitOptions" style="display: none;">
+                <div class="form-group">
+                    {{ form.split_with.label }}
+                    {{ form.split_with(class="form-control", onchange="updatePaymentFields()") }}
+                </div>
+                <div id="paymentFields">
+                    <!-- Payment fields will be dynamically added here -->
+                </div>
+            </div>
+            <div class="form-group mt-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</div>
+
+      <div class="expense-table">
+        {% for group in groups %}
+        <div class="group-expenses mb-4">
+            <h3>{{ group.name }} Expenses</h3>
+            <a href="{{ url_for('generate_report', group_id=group.id) }}" class="btn btn-success mb-3">
+                Download PDF Report
+            </a>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Added By</th>
+                        <th>Split</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in group_expenses[group.id] %}
+                    <tr>
+                        <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ expense.category }}</td>
+                        <td>${{ "%.2f"|format(expense.amount) }}</td>
+                        <td>{{ expense.user.username }}</td>
+                        <td>
+                            {% if expense.is_split %}
+                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#splitDetails{{ expense.id }}">
+                                View Split
+                            </button>
+                            <!-- Split Details Modal -->
+                            <div class="modal fade" id="splitDetails{{ expense.id }}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Split Details</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>User</th>
+                                                        <th>Amount Owed</th>
+                                                        <th>Amount Paid</th>
+                                                        <th>Balance</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for split in expense.splits %}
+                                                    <tr>
+                                                        <td>{{ split.user.username }}</td>
+                                                        <td>${{ "%.2f"|format(split.amount_owed) }}</td>
+                                                        <td>${{ "%.2f"|format(split.amount_paid) }}</td>
+                                                        <td>${{ "%.2f"|format(split.balance) }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            No
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        <h2>Personal Expenses</h2>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in personal_expenses %}
+                    <tr>
+                        <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ expense.category }}</td>
+                        <td>${{ "%.2f"|format(expense.amount) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% for group in groups %}
+      <div class="expense-table">
+        {% for group in groups %}
+        <div class="group-expenses mb-4">
+            <h3>{{ group.name }} Expenses</h3>
+            <a href="{{ url_for('generate_report', group_id=group.id) }}" class="btn btn-success mb-3">
+                Download PDF Report
+            </a>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Added By</th>
+                        <th>Split</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in group_expenses[group.id] %}
+                    <tr>
+                        <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ expense.category }}</td>
+                        <td>${{ "%.2f"|format(expense.amount) }}</td>
+                        <td>{{ expense.user.username }}</td>
+                        <td>
+                            {% if expense.is_split %}
+                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#splitDetails{{ expense.id }}">
+                                View Split
+                            </button>
+                            <!-- Split Details Modal -->
+                            <div class="modal fade" id="splitDetails{{ expense.id }}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Split Details</h5>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <span>&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>User</th>
+                                                        <th>Amount Owed</th>
+                                                        <th>Amount Paid</th>
+                                                        <th>Balance</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for split in expense.splits %}
+                                                    <tr>
+                                                        <td>{{ split.user.username }}</td>
+                                                        <td>${{ "%.2f"|format(split.amount_owed) }}</td>
+                                                        <td>${{ "%.2f"|format(split.amount_paid) }}</td>
+                                                        <td>${{ "%.2f"|format(split.balance) }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            No
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        <h2>{{ group.name }} Expenses</h2>
+        <p class="text-muted mb-3">Invitation Code: {{ group.invitation_code }}</p>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Added By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in group_expenses[group.id] %}
+                    <tr>
+                        <td>{{ expense.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ expense.category }}</td>
+                        <td>${{ "%.2f"|format(expense.amount) }}</td>
+                        <td>{{ expense.user.username }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}
